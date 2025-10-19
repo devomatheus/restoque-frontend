@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Arquivos Excel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-light d-flex align-items-center min-vh-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center py-3">
+                        <h4 class="mb-0">Importar Arquivos Excel</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label for="excelFiles" class="form-label fw-bold">Selecione os arquivos Excel</label>
+                            <input type="file" class="form-control" id="excelFiles" accept=".xlsx, .xls, .xlsm" multiple>
+                            <div class="form-text">Formatos aceitos: .xlsx, .xls, .xlsm</div>
+                        </div>
+                        
+                        <div id="fileList" class="mt-4">
+                            <p class="text-muted text-center">Nenhum arquivo selecionado</p>
+                        </div>
+                        
+                        <button class="btn btn-primary w-100 mt-3" id="importBtn" disabled>
+                            Importar Arquivos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- iziToast -->
+    <script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
+
+    <script type="module" src="./send_file.js"></script>
+    <script type="module" src="./input_file.js"></script>
+
+    <script>
+
+    </script>
+</body>
+</html>

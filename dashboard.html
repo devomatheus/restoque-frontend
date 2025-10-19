@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        .table-container {
+            margin: 20px;
+        }
+
+        .table-header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+    <!-- jsPDF e autoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+    <!-- SheetJS para exportação Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="table-header">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="bi bi-table"></i> Dashboard</h1>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button class="btn btn-outline-danger me-2" id="btnExportarPDF">
+                        <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn btn-outline-success" id="btnExportarExcel">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-funnel"></i> Campos disponíveis</h5>
+                <div class="row g-3">
+                    <div class="col-md-12" id="camposDisponiveis">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-funnel"></i> Filtros</h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="filtroCategoria" class="form-label">Produto</label>
+                        <select class="form-select" id="filtroCategoria">
+                            <option selected>Todas as categorias</option>
+                            <option>Eletrônicos</option>
+                            <option>Informática</option>
+                            <option>Áudio</option>
+                            <option>Periféricos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filtroFornecedor" class="form-label">Fornecedor</label>
+                        <select class="form-select" id="filtroFornecedor">
+                            <option selected>Todos os fornecedores</option>
+                            <option>TechImport Ltda.</option>
+                            <option>EletroParts S.A.</option>
+                            <option>Global Components</option>
+                            <option>MegaSupply Brasil</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="bi bi-search"></i> Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive table-container">
+            <table id="data-table" class="table table-striped table-hover table-bordered">
+                <thead class="table-dark">
+                    <!-- <tr>
+                        <th>Categoria</th>
+                        <th>Cód. Fornecedor</th>
+                        <th>Cód. Produto</th>
+                        <th>EAN</th>
+                        <th>Estoque Disponível</th>
+                        <th>Estoque Existente</th>
+                        <th>Estoque em Andamento</th>
+                        <th>Fornecedor</th>
+                        <th>Produto</th>
+                    </tr> -->
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="Navegação de páginas">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Próxima</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- iziToast -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
+
+    
+
+    <script type="module" src="./input_file.js"></script>
+    <script type="module" src="./send_file.js"></script>
+    <script type="module" src="./campos_disponiveis.js"></script>
+    <script type="module" src="./buscar_dados.js"></script>
+    
+
+    <script>
+        $(document).ready(function () {
+            let columnVisibility = [true, true, true, true, true, true, true, true];
+            var produtos = [];
+            var itensPorPagina = 10;
+            var paginaAtual = 1;
+            var totalPaginas = 1;
+            // Exportar tabela para PDF
+            $('#btnExportarPDF').on('click', function () {
+                const { jsPDF } = window.jspdf;
+                var doc = new jsPDF();
+                // Captura os cabeçalhos da tabela
+                var headers = [];
+                $('table thead th').each(function () {
+                    headers.push($(this).text());
+                });
+                // Captura os dados das linhas
+                var data = [];
+                $('table tbody tr').each(function () {
+                    var row = [];
+                    $(this).find('td').each(function (index) {
+                        // Ignora coluna de ações
+                        if (index < headers.length - 1) {
+                            row.push($(this).text());
+                        }
+                    });
+                    if (row.length) data.push(row);
+                });
+                // Remove coluna de ações do cabeçalho
+                var exportHeaders = headers.slice(0, headers.length - 1);
+                doc.autoTable({
+                    head: [exportHeaders],
+                    body: data,
+                    styles: { font: 'helvetica', fontSize: 10 },
+                    headStyles: { fillColor: [41, 128, 185] },
+                    margin: { top: 20 }
+                });
+                doc.save('estoque.pdf');
+            });
+
+            // Exportar tabela para Excel
+            $('#btnExportarExcel').on('click', function () {
+                var headers = [];
+                $('table thead th').each(function () {
+                    headers.push($(this).text());
+                });
+                var exportHeaders = headers.slice(0, headers.length - 1); // Remove coluna de ações
+                var data = [];
+                $('table tbody tr').each(function () {
+                    var row = {};
+                    $(this).find('td').each(function (index) {
+                        if (index < exportHeaders.length) {
+                            row[exportHeaders[index]] = $(this).text();
+                        }
+                    });
+                    if (Object.keys(row).length) data.push(row);
+                });
+                var ws = XLSX.utils.json_to_sheet(data);
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Estoque");
+                XLSX.writeFile(wb, "estoque.xlsx");
+            });
+
+            function renderTabela(pagina) {
+                var inicio = (pagina - 1) * itensPorPagina;
+                var fim = inicio + itensPorPagina;
+                var itensPagina = produtos.slice(inicio, fim);
+                var tbody = '';
+                itensPagina.forEach(function (item) {
+                    tbody += `<tr>
+                        <td>${item.fornecedor}</td>
+                        <td>${item.produto}</td>
+                        <td>${item.em_andamento}</td>
+                        <td>${item.existente}</td>
+                        <td>${item.disponivel}</td>
+                        <td>
+                            <button class='btn btn-sm btn-outline-primary btn-editar' data-index='${inicio + itensPagina.indexOf(item)}'><i class='bi bi-pencil'></i></button>
+                                <button class='btn btn-sm btn-outline-danger btn-apagar' data-index='${inicio + itensPagina.indexOf(item)}'><i class='bi bi-trash'></i></button>
+                        </td>
+                    </tr>`;
+                });
+                $('table tbody').html(tbody);
+
+                updateColumnVisibility()
+            }
+
+            function renderPaginacao() {
+                var paginacao = '';
+                paginacao += `<li class="page-item${paginaAtual === 1 ? ' disabled' : ''}">
+                <a class="page-link" href="#" data-page="anterior" tabindex="-1">Anterior</a>
+            </li>`;
+                for (var i = 1; i <= totalPaginas; i++) {
+                    paginacao += `<li class="page-item${paginaAtual === i ? ' active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+                }
+                paginacao += `<li class="page-item${paginaAtual === totalPaginas ? ' disabled' : ''}">
+                <a class="page-link" href="#" data-page="proxima">Próxima</a>
+            </li>`;
+                $('.pagination').html(paginacao);
+            }
+
+            function atualizarTabelaEPaginacao() {
+                renderTabela(paginaAtual);
+                renderPaginacao();
+            }
+
+            // Carregar dados e inicializar paginação
+            $.getJSON('dados-exemplo/produtos.json', function (data) {
+                produtos = data;
+                totalPaginas = Math.ceil(produtos.length / itensPorPagina);
+                paginaAtual = 1;
+                atualizarTabelaEPaginacao();
+                // $('#loading-message').addClass('d-none');
+                $('#data-table').removeClass('d-none');
+            });
+
+            // Evento de clique na paginação
+            $(document).on('click', '.pagination .page-link', function (e) {
+                e.preventDefault();
+                var page = $(this).data('page');
+                if (page === 'anterior' && paginaAtual > 1) {
+                    paginaAtual--;
+                } else if (page === 'proxima' && paginaAtual < totalPaginas) {
+                    paginaAtual++;
+                } else if (!isNaN(page)) {
+                    paginaAtual = parseInt(page);
+                }
+                atualizarTabelaEPaginacao();
+            });
+
+            // Abrir modal de edição ao clicar no botão editar
+            $(document).on('click', '.btn-editar', function () {
+                var index = $(this).data('index');
+                var produto = produtos[index];
+                // Preencher os campos do modal de edição
+                $('#edit_cod_fornecedor').val(produto.cod_fornecedor);
+                $('#edit_fornecedor').val(produto.fornecedor);
+                $('#edit_produto').val(produto.produto);
+                $('#edit_categoria').val(produto.categoria);
+                $('#edit_ean').val(produto.ean);
+                $('#edit_percentual').val(produto.percentual);
+                $('#edit_em_andamento').val(produto.em_andamento);
+                $('#edit_existente').val(produto.existente);
+                $('#edit_disponivel').val(produto.disponivel);
+                // Salvar o índice para edição
+                $('#formEditarProduto').data('index', index);
+                var modal = new bootstrap.Modal(document.getElementById('modalEditarProduto'));
+                modal.show();
+            });
+
+            // Salvar alterações do produto editado
+            $('#formEditarProduto').on('submit', function (e) {
+                e.preventDefault();
+                var index = $(this).data('index');
+                if (index !== undefined) {
+                    produtos[index] = {
+                        cod_fornecedor: $('#edit_cod_fornecedor').val(),
+                        fornecedor: $('#edit_fornecedor').val(),
+                        produto: $('#edit_produto').val(),
+                        categoria: $('#edit_categoria').val(),
+                        ean: $('#edit_ean').val(),
+                        percentual: $('#edit_percentual').val(),
+                        em_andamento: $('#edit_em_andamento').val(),
+                        existente: $('#edit_existente').val(),
+                        disponivel: $('#edit_disponivel').val()
+                    };
+                    atualizarTabelaEPaginacao();
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarProduto'));
+                    modal.hide();
+                }
+            });
+
+            // Apagar produto com confirmação
+            $(document).on('click', '.btn-apagar', function () {
+                var index = $(this).data('index');
+                var produto = produtos[index];
+                var mensagem = `Deseja realmente apagar este produto?\n\n` +
+                    `Fornecedor: ${produto.fornecedor}\n` +
+                    `Produto: ${produto.produto}\n` +
+                    `Categoria: ${produto.categoria}\n` +
+                    `EAN: ${produto.ean}\n` +
+                    `Estoque Disponível: ${produto.disponivel}`;
+                if (confirm(mensagem)) {
+                    produtos.splice(index, 1);
+                    totalPaginas = Math.max(1, Math.ceil(produtos.length / itensPorPagina));
+                    if (paginaAtual > totalPaginas) paginaAtual = totalPaginas;
+                    atualizarTabelaEPaginacao();
+                }
+            });
+
+            function updateColumnVisibility() {
+                // Atualiza o cabeçalho
+                $('#data-table thead th').each(function(index) {
+                    if (columnVisibility[index]) {
+                        $(this).removeClass('d-none');
+                    } else {
+                        $(this).addClass('d-none');
+                    }
+                });
+                
+                // Atualiza as células do corpo
+                $('#data-table tbody tr').each(function() {
+                    $(this).find('td').each(function(index) {
+                        if (columnVisibility[index]) {
+                            $(this).removeClass('d-none');
+                        } else {
+                            $(this).addClass('d-none');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
